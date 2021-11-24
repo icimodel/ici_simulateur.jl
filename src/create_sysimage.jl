@@ -9,7 +9,7 @@ create_sysimage(
     [:ICI_simulateur],
 
     # Chemin de l'image générée
-    sysimage_path = "ICI_simulateur.so",
+    #sysimage_path = "ICI_simulateur.so",
 
     # Script de précompilation
     precompile_execution_file = "run_for_precompile.jl",
