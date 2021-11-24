@@ -13,5 +13,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "framagit.org/ici/ICI_simulateur.jl.git",
+    repo = "github.com/icimodel/ici_simulateur.jl.git",
 )
