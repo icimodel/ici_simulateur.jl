@@ -52,13 +52,99 @@ Pour lancer les simulations :
 > julia --project=. script.jl
 ```
 
+## Cluster or not cluster ? 
+
+Le simulateur ICI fonctionne aussi bien en séquentiel (un seul processus) qu'en parallèle (plusieurs processus) en local
+ou sur des grands clusters de calculs. 
+Cependant, l'utilisateur doit bien indiquer son choix dans le module `ParamSimu` présent dans le fichier 
+`Module_Paramters.jl` avant de lancer les simulations. 
+### Sur un ordinateur local avec un seul processus (séquentiel)
+
+```julia 
+module ParamSimu
+
+    const NB_DAY = 80 ;  # nombre de jours simulés
+    const NB_CONT = 5 ; # nombre initial de contaminés
+    const NB_MC = 2 ; # nombre de simulations (methode Monte-Carlo)
+    const vMPI = false ; # Si on utilise MPI 
+    const CALCULATEUR = false ; # Calcul sur super-calculateur
+    const SORTIE = false ; # Pas encore utilisé ? 
+    const PRINT_ETAT = true ; # Pour afficher l'état de l'épidémie à chaque journée (peut devenir lourd si on est en MPI)
+
+end
+```
+
+Le lancement s'effectue comme indiqué plus haut. 
+
+### Sur un ordinateur local avec plusieurs processus 
+
+```julia 
+module ParamSimu
+
+    const NB_DAY = 80 ;  # nombre de jours simulés
+    const NB_CONT = 5 ; # nombre initial de contaminés
+    const NB_MC = 2 ; # nombre de simulations (methode Monte-Carlo)
+    const vMPI = true ; # Si on utilise MPI 
+    const CALCULATEUR = false ; # Calcul sur super-calculateur
+    const SORTIE = false ; # Pas encore utilisé ? 
+    const PRINT_ETAT = true ; # Pour afficher l'état de l'épidémie à chaque journée (peut devenir lourd si on est en MPI)
+
+end
+```
+
+Pour faire tourner le code en parallèle, il est nécessaire de posséder 
+une version de OpenMPI installée sur l'ordinateur. 
+
+
+### Sur un cluster de calculs avec plusieurs processus 
+
+```julia 
+module ParamSimu
+
+    const NB_DAY = 80 ;  # nombre de jours simulés
+    const NB_CONT = 5 ; # nombre initial de contaminés
+    const NB_MC = 2 ; # nombre de simulations (methode Monte-Carlo)
+    const vMPI = true ; # Si on utilise MPI 
+    const CALCULATEUR = true ; # Calcul sur super-calculateur
+    const SORTIE = false ; # Pas encore utilisé ? 
+    const PRINT_ETAT = false ; # Pour afficher l'état de l'épidémie à chaque journée (peut devenir lourd si on est en MPI)
+
+end
+```
+
+Utiliser un script de soumission (à faire). 
+
 ## Aperçu rapide du fonctionnement du simulateur : 
 
+### L'environnemet Julia avec ses packages 
 Parler des packages requis : LightGraphs, ... 
+* [CSV.jl](https://github.com/JuliaDocs/DocumenterTools.jl)
+* [DataFrames.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [Distributions.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [Documenter.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [GraphIO.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [GraphMLReader.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [JSON.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [LightGraphs.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [MPI.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [MetaGraphs.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [SpecialFunctions.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [StatsBase.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [Dates.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [DelimitedFiles.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [Random.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
+* [Statistics.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
 
-Données d'entrées (graphe au format ML) + modules de paramètres 
+### Les données d'entrées 
 
-Pour en savoir plus, merci de se référer à la documentation présente ci-dessous. 
+Les données d'entrées sont situés dans le dossier `src/data`. 
+Les paramètres d'entrées du modèle sont présents dans `src/` dans le module `Module_Parameters.jl`
+
+### Les données de sorties 
+Données de sorties 
+
+
+Pour en savoir plus sur le code, merci de se référer à la documentation présente ci-dessous. 
 
 ## Documentation
 
@@ -72,14 +158,10 @@ The package is tested against, and being developed for, Julia `1.0` and above on
 
 Contributions are very welcome, as are feature requests and suggestions. Please open an [issue][issues-url] if you encounter any problems. The [contributing page][contrib-url] has a few guidelines that should be followed when opening pull requests and contributing code.
 
-## Related packages
 
-There are several packages that extend Documenter in different ways. The JuliaDocs organization maintains:
 
-* [DocumenterTools.jl](https://github.com/JuliaDocs/DocumenterTools.jl)
-* [DocumenterMarkdown.jl](https://github.com/JuliaDocs/DocumenterMarkdown.jl)
 
-## Pour une utilisation sur un cluster de calcul 
+
 
 [contrib-url]: https://juliadocs.github.io/Documenter.jl/dev/contributing/
 [discourse-tag-url]: https://discourse.julialang.org/tags/documenter
@@ -98,64 +180,5 @@ There are several packages that extend Documenter in different ways. The JuliaDo
 [codecov-img]: https://codecov.io/gh/JuliaDocs/Documenter.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/JuliaDocs/Documenter.jl
 
-
-
-
-
-
-
-
-```@meta
-DocTestSetup  = quote
-    using ICI_simulateur
-end
-```
-
-
-## Example blocks
-
-### Script: @example
-
-```@example
-import Random   # hide
-Random.seed!(1) # hide
-A = rand(3, 3)
-b = [1, 2, 3]
-A \ b
-```
-
-### REPL: @repl
-
-```@repl
-1 + 1
-```
-
-## Documentation tests
-
-### Script
-
-```jldoctest
-a = 1
-b = 2
-a + b
-
-# output
-
-3
-```
-
-### REPL
-
-```jldoctest
-julia> a = 1
-1
-
-julia> b = 2;
-
-julia> c = 3;  # comment
-
-julia> a + b + c
-6
-```
 
 ## Reference
